@@ -14,6 +14,7 @@
             width: 100%;
             }
 
+    @* using System.Diagnostics.Eventing.Reader; *@
             td, th {
             border: 1px solid #dddddd;
             text-align: left;
@@ -32,34 +33,57 @@
         @{
             List<Customer>? customers = (List<Customer>)ViewData["customers"];
             bool insert = false;
+            int CustomerID = 0;
 
             if (ViewData["insert"] != null)
             {
                 insert = true;
             }
 
+            if (ViewData["CustomerID"] != null)
+            {
+                CustomerID = (int)ViewData["CustomerID"];
+            }
+
             if (customers != null)
             {
                 @:<table>
-                    @:<tr>
-                        @:<th>ID</th>
-                        @:<th>Name</th>
-                        @:<th>Email</th>
-                        @:<th>Action</th>
-                    @:</tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
 
-                     @foreach (var customer in customers)
+                    @foreach (var customer in customers)
                     {
-                        <tr>
-                            <td>@customer.ID</td>
-                            <td>@customer.Name</td>
-                            <td>@customer.Email</td>
-                            <td>
+                        @if (CustomerID != customer.ID)
+                        {
+                            <tr>
+                                <td>@customer.ID</td>
+                                <td>@customer.Name</td>
+                                <td>@customer.Email</td>
+                                <td>
+                                    <form method="post">
+                                        <button type="submit" name="delete" value="@customer.ID">Delete</button>
+                                        <button type="submit" name="edit" value="@customer.ID">Edit</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>@customer.ID</td>
                                 <form method="post">
-                                    <button type="submit" name="delete" value="@customer.ID">Delete</button>
+                                    <input type="hidden" name="editing" value="editing" />
+                                    <input type="hidden" name="id" value="@customer.ID" />
+                                    <td><input type="text" name="name" value="@customer.Name" /></td>
+                                    <td><input type="text" name="email" value="@customer.Email" /></td>
+                                    <td><button type="submit">Submit</button></td>
                                 </form>
-                            </td>
-                        </tr>
+                            </tr>
+                        }
                     }
                 @:</table>
             }

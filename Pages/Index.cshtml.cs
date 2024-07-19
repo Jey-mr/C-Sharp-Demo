@@ -17,17 +17,7 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        using var dbContext = new NutshellContext();
-        IEnumerable<Customer> query = dbContext.Customers;
-
-        List<Customer> customers = [];
-
-        foreach (var customer in query)
-        {
-            customers.Add(customer);
-        }
-
-        ViewData["customers"] = customers;
+        ViewData["customers"] = GetCustomers();
     }
 
     public IActionResult OnPost()
@@ -40,6 +30,37 @@ public class IndexModel : PageModel
         string? delete = Request.Form["delete"];
         string? insert = Request.Form["insert"];
         string? inserting = Request.Form["inserting"];
+        string? edit = Request.Form["edit"];
+        string? editing = Request.Form["editing"];
+
+        if (editing != null)
+        {
+            int id = Int32.Parse(Request.Form["id"]);
+            string? name = Request.Form["name"];
+            string? email = Request.Form["email"];
+            using var dbContext = new NutshellContext();
+            Customer customer = dbContext.Customers.Where(c => c.ID == id).Single();
+
+            if (name != null)
+            {
+                customer.Name = name;
+            }
+            
+            if (email != null)
+            {
+                customer.Email = email;
+            }
+
+            dbContext.Customers.Update(customer);
+            dbContext.SaveChanges();
+        }
+
+        if (edit != null)
+        {
+            ViewData["customers"] = GetCustomers();
+            ViewData["CustomerID"] = Int32.Parse(edit);
+            return Page();
+        }
 
         if (insert != null)
         {
@@ -72,6 +93,20 @@ public class IndexModel : PageModel
         }
 
         return RedirectToPage();
+    }
+
+    private List<Customer> GetCustomers()
+    {
+        using var dbContext = new NutshellContext();
+        IEnumerable<Customer> query = dbContext.Customers;
+        List<Customer> customers = [];
+
+        foreach (var customer in query)
+        {
+            customers.Add(customer);
+        }
+
+        return customers;
     }
 }
 
