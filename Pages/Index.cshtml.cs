@@ -27,9 +27,7 @@ public class IndexModel : PageModel
             customers.Add(customer);
         }
 
-
-        @ViewData["string"] = "Hello World";
-        @ViewData["customers"] = customers;
+        ViewData["customers"] = customers;
     }
 
     public IActionResult OnPost()
@@ -39,11 +37,34 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        string? action = Request.Form["delete"];
+        string? delete = Request.Form["delete"];
+        string? insert = Request.Form["insert"];
+        string? inserting = Request.Form["inserting"];
 
-        if (action != null)
+        if (insert != null)
         {
-            int id = Int32.Parse(action);
+            ViewData["insert"] = true;
+            return Page();
+        }
+
+        if (inserting != null)
+        {
+            using var dbContext = new NutshellContext();
+            IEnumerable<Customer> customers = dbContext.Customers;
+
+            Customer customer = new() {
+                ID = customers.Count() + 1,
+                Name = Request.Form["name"],
+                Email = Request.Form["email"]
+            };
+
+            dbContext.Customers.Add(customer);
+            dbContext.SaveChanges();
+        }
+
+        if (delete != null)
+        {
+            int id = Int32.Parse(delete);
             using var dbContext = new NutshellContext();
             var customer = dbContext.Customers.Where(c => c.ID == id).Single();
             dbContext.Customers.Remove(customer);
