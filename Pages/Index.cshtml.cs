@@ -15,9 +15,16 @@ public class IndexModel : PageModel
         _logger = logger;
     }
 
-    public void OnGet()
+    public void OnGet(string sort)
     {
-        ViewData["customers"] = GetCustomers();
+        if (sort == null)
+        {
+            ViewData["customers"] = GetCustomers();
+        }
+        else 
+        {
+            ViewData["customers"] = GetSortedCustomers(sort);
+        }
     }
 
     public IActionResult OnPost()
@@ -100,6 +107,33 @@ public class IndexModel : PageModel
         using var dbContext = new NutshellContext();
         IEnumerable<Customer> query = dbContext.Customers;
         List<Customer> customers = [];
+
+        foreach (var customer in query)
+        {
+            customers.Add(customer);
+        }
+
+        return customers;
+    }
+
+    private List<Customer> GetSortedCustomers(string sort)
+    {
+        using var dbContext = new NutshellContext();
+        IEnumerable<Customer> query;
+        List<Customer> customers = [];
+
+        if (sort.Equals("ID"))
+        {
+            query = dbContext.Customers.OrderBy(c => c.ID);
+        }
+        else if (sort.Equals("Name"))
+        {
+            query = dbContext.Customers.OrderBy(c => c.Name);
+        }
+        else
+        {
+            query = dbContext.Customers.OrderBy(c => c.Email);
+        }
 
         foreach (var customer in query)
         {

@@ -14,7 +14,6 @@
             width: 100%;
             }
 
-    @* using System.Diagnostics.Eventing.Reader; *@
             td, th {
             border: 1px solid #dddddd;
             text-align: left;
@@ -23,6 +22,11 @@
 
             tr:nth-child(even) {
             background-color: #dddddd;
+            }
+
+            .heading {
+                color: #000;
+                text-decoration: none;
             }
         </style>
     </head>
@@ -49,9 +53,9 @@
             {
                 @:<table>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
+                        <th><a class="heading" asp-page="/Index" asp-route-sort="ID">ID</a></th>
+                        <th><a class="heading" asp-page="/Index" asp-route-sort="Name">Name</a></th>
+                        <th><a class="heading" asp-page="/Index" asp-route-sort="Email">Email</a></th>
                         <th>Action</th>
                     </tr>
 
