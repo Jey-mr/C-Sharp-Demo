@@ -2,6 +2,7 @@ using System.Collections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace demo.Pages;
 
@@ -29,6 +30,27 @@ public class IndexModel : PageModel
 
         @ViewData["string"] = "Hello World";
         @ViewData["customers"] = customers;
+    }
+
+    public IActionResult OnPost()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        string? action = Request.Form["delete"];
+
+        if (action != null)
+        {
+            int id = Int32.Parse(action);
+            using var dbContext = new NutshellContext();
+            var customer = dbContext.Customers.Where(c => c.ID == id).Single();
+            dbContext.Customers.Remove(customer);
+            dbContext.SaveChanges();
+        }
+
+        return RedirectToPage();
     }
 }
 

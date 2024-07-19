@@ -39,17 +39,29 @@
                         @:<th>ID</th>
                         @:<th>Name</th>
                         @:<th>Email</th>
+                        @:<th>Action</th>
                     @:</tr>
-                    foreach (var customer in customers)
+
+                     @foreach (var customer in customers)
                     {
-                        @:<tr>
-                            @:<td>@customer.ID</td>
-                            @:<td>@customer.Name</td>
-                            @:<td>@customer.Email</td>
-                        @:</tr>
+                        <tr>
+                            <td>@customer.ID</td>
+                            <td>@customer.Name</td>
+                            <td>@customer.Email</td>
+                            <td>
+                                <form method="post">
+                                    <button type="submit" name="delete" value="@customer.ID">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
                     }
                 @:</table>
             }
+
+            @* <form method="post">
+                <input type="text" name="InputValue" />
+                <button type="submit">submit</button>
+            </form> *@
         }
     </body>
 </html>
