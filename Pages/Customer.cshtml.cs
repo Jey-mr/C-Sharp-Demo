@@ -24,6 +24,7 @@ public class CustomerModel : PageModel
         else 
         {
             ViewData["customers"] = GetSortedCustomers(sort);
+            ViewData["sort"] = sort;
         }
     }
 
@@ -39,6 +40,8 @@ public class CustomerModel : PageModel
         string? inserting = Request.Form["inserting"];
         string? edit = Request.Form["edit"];
         string? editing = Request.Form["editing"];
+        string? sort = Request.Form["sort"];
+        ViewData["sort"] = sort;
 
         if (editing != null)
         {
@@ -60,19 +63,28 @@ public class CustomerModel : PageModel
 
             dbContext.Customers.Update(customer);
             dbContext.SaveChanges();
+            // return ReturnPage(sort);
         }
 
         if (edit != null)
         {
-            ViewData["customers"] = GetCustomers();
+            // if (sort == null)
+            // {
+            //     ViewData["customers"] = GetCustomers();
+            // }
+            // else
+            // {   
+            //     ViewData["customers"] = GetSortedCustomers(sort);
+            // }
+
             ViewData["CustomerID"] = Int32.Parse(edit);
-            return Page();
+            // return ReturnPage(sort);
         }
 
         if (insert != null)
         {
             ViewData["insert"] = true;
-            return Page();
+            // return Page();
         }
 
         if (inserting != null)
@@ -88,6 +100,7 @@ public class CustomerModel : PageModel
 
             dbContext.Customers.Add(customer);
             dbContext.SaveChanges();
+            // return ReturnPage(sort);
         }
 
         if (delete != null)
@@ -97,9 +110,24 @@ public class CustomerModel : PageModel
             var customer = dbContext.Customers.Where(c => c.ID == id).Single();
             dbContext.Customers.Remove(customer);
             dbContext.SaveChanges();
+            // return ReturnPage(sort);
         }
 
-        return RedirectToPage();
+        return ReturnPage(sort);
+    }
+
+    private IActionResult ReturnPage(string sort)
+    {
+        if (sort == null)
+        {
+            ViewData["customers"] = GetCustomers();
+        }
+        else
+        {   
+            ViewData["customers"] = GetSortedCustomers(sort);
+        }
+
+        return Page();
     }
 
     private List<Customer> GetCustomers()
